@@ -2,7 +2,7 @@
 
  Architecture Diagram:
  
-```Mermaid
+```mermaid
 graph LR
     subgraph Backend
         CloudFormation
