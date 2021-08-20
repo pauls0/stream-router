@@ -6,6 +6,7 @@ on:
       - '**/*.mermaid'
       - '**/*.mmd'
       - '**/*.md'
+  workflow_dispatch:
 
 jobs:
   build:
