@@ -24,9 +24,8 @@ graph LR
     client -->|HTTP request - ip| APIGateway
     APIGateway -->|HTTP request - location| client
     site -->|HTTP request - read/write state| APIGateway
-    APIGateway -->|HTTP request - state| APIGateway
     APIGateway -->|get location| Lambda
-    APIGateway -->|change state| Lambda
+    APIGateway -->|get/change state| Lambda
     Lambda -->|read/write state| s3
 
     note1>store state]
