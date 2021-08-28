@@ -1,0 +1,21 @@
+{
+  "name": "lambda-route",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "ts-node index.ts",
+    "dev": "ts-node-dev --respawn index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.7.4",
+    "typescript": "^4.4.2"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.978.0"
+  }
+}
