@@ -62,7 +62,6 @@
     "LambdaRoute": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "InlineCode": "exports.handler = async (event) => {\n    const response = {\n        statusCode: 200,\n        body: JSON.stringify('Hello from Lambda! LambdaRoute'),\n    };\n    return response;\n};\n",
         "Handler": "index.handler",
         "Runtime": "nodejs14.x",
         "MemorySize": 128,
@@ -71,6 +70,10 @@
           "Fn::GetAtt": ["RoleLambda", "Arn"]
         },
         "FunctionName": { "Fn::Sub": "${AWS::StackName}-lambda-route" },
+        "CodeUri": {
+          "Bucket": { "Ref": "BucketDeployment" },
+          "Key": "lambda-route.zip"
+        },
         "Events": {
           "GetRequest": {
             "Type": "Api",
@@ -85,7 +88,6 @@
     "LambdaMappingGet": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "InlineCode": "exports.handler = async (event) => {\n    const response = {\n        statusCode: 200,\n        body: JSON.stringify('Hello from Lambda! LambdaMappingGet'),\n    };\n    return response;\n};\n",
         "Handler": "index.handler",
         "Runtime": "nodejs14.x",
         "MemorySize": 128,
@@ -94,6 +96,10 @@
           "Fn::GetAtt": ["RoleLambda", "Arn"]
         },
         "FunctionName": { "Fn::Sub": "${AWS::StackName}-lambda-mapping-get" },
+        "CodeUri": {
+          "Bucket": { "Ref": "BucketDeployment" },
+          "Key": "lambda-mapping-get.zip"
+        },
         "Events": {
           "GetRequest": {
             "Type": "Api",
@@ -108,7 +114,6 @@
     "LambdaMappingSet": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "InlineCode": "exports.handler = async (event) => {\n    const response = {\n        statusCode: 200,\n        body: JSON.stringify('Hello from Lambda! LambdaMappingSet'),\n    };\n    return response;\n};\n",
         "Handler": "index.handler",
         "Runtime": "nodejs14.x",
         "MemorySize": 128,
@@ -117,6 +122,10 @@
           "Fn::GetAtt": ["RoleLambda", "Arn"]
         },
         "FunctionName": { "Fn::Sub": "${AWS::StackName}-lambda-mapping-set" },
+        "CodeUri": {
+          "Bucket": { "Ref": "BucketDeployment" },
+          "Key": "lambda-mapping-set.zip"
+        },
         "Events": {
           "PostRequest": {
             "Type": "Api",
