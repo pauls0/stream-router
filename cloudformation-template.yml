@@ -58,9 +58,7 @@ Resources:
               - Sid: RoutePolicy
                 Effect: Allow
                 Action:
-                  - "s3:GetObject"
-                  - "s3:PutObject"
-                  - "s3:DeleteObject"
+                  - "s3:*" # TODO: remove s3:*
                   - "dynamodb:*" # TODO: remove dynamodb:*
                 Resource:
                   - !GetAtt
@@ -68,6 +66,15 @@ Resources:
                     - Arn
                   - !GetAtt
                     - TableMappings
+                    - Arn
+                  - !GetAtt
+                    - TableCDIRNetwork
+                    - Arn
+                  - !GetAtt
+                    - TableCDNHost
+                    - Arn
+                  - !GetAtt
+                    - TableCDNHostDefaults
                     - Arn
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
@@ -145,6 +152,68 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
+  TableCDIRNetwork:
+    Type: "AWS::DynamoDB::Table"
+    DeletionPolicy: Delete
+    Properties:
+      TableName: !Sub "${AWS::StackName}-table-cdir-network"
+      AttributeDefinitions:
+        - AttributeName: base
+          AttributeType: N
+        # - AttributeName: first
+        #   AttributeType: N
+        # - AttributeName: last
+        #   AttributeType: N
+        # - AttributeName: network
+        #   AttributeType: N
+        # - AttributeName: cidr
+        #   AttributeType: S
+      KeySchema:
+        - AttributeName: host
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  TableCDNHost:
+    Type: "AWS::DynamoDB::Table"
+    DeletionPolicy: Delete
+    Properties:
+      TableName: !Sub "${AWS::StackName}-table-cdn-host"
+      AttributeDefinitions:
+        - AttributeName: cdn
+          AttributeType: S
+        # - AttributeName: base
+        #   AttributeType: N
+        # - AttributeName: first
+        #   AttributeType: N
+        # - AttributeName: last
+        #   AttributeType: N
+        # - AttributeName: cidr
+        #   AttributeType: S
+        # - AttributeName: host
+        #   AttributeType: S
+      KeySchema:
+        - AttributeName: cdn
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  TableCDNHostDefaults:
+    Type: "AWS::DynamoDB::Table"
+    DeletionPolicy: Delete
+    Properties:
+      TableName: !Sub "${AWS::StackName}-table-cdn-host-defaults"
+      AttributeDefinitions:
+        - AttributeName: cdn
+          AttributeType: S
+        # - AttributeName: host
+        #   AttributeType: S
+      KeySchema:
+        - AttributeName: cdn
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
   RoleAmplify:
     Type: "AWS::IAM::Role"
     Properties:
@@ -163,7 +232,7 @@ Resources:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
-                Action: "amplify:*"
+                Action: "amplify:*" # TODO: remove amplify:*
                 Resource: "*"
   AmplifyAppAdminConsole:
     Type: "AWS::Amplify::App"
