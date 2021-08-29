@@ -284,21 +284,21 @@
         "TableName": { "Fn::Sub": "${AWS::StackName}-table-mappings" },
         "AttributeDefinitions": [
           {
-            "AttributeName": "Network",
+            "AttributeName": "network",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "CDN",
+            "AttributeName": "cdn",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "Network",
+            "AttributeName": "network",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "CDN",
+            "AttributeName": "cdn",
             "KeyType": "RANGE"
           }
         ],
