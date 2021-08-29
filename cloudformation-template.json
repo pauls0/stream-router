@@ -1,0 +1,133 @@
+{
+  "Transform": "AWS::Serverless-2016-10-31",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Stream Router",
+  "Metadata": {},
+  "Parameters": {},
+  "Mappings": {},
+  "Conditions": {},
+  "Resources": {
+    "BucketDeployment": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": { "Fn::Sub": "${AWS::StackName}-bucket-deployment" }
+      }
+    },
+    "BucketAssets": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": { "Fn::Sub": "${AWS::StackName}-bucket-assets" }
+      }
+    },
+    "RoleLambda": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": { "Fn::Sub": "${AWS::StackName}-role-lambda" },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "Service": "lambda.amazonaws.com" },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Sub": "${AWS::StackName}-lambda-policy"
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "RoutePolicy",
+                  "Effect": "Allow",
+                  "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+                  "Resource": [{ "Fn::GetAtt": ["BucketAssets", "Arn"] }]
+                }
+              ]
+            }
+          }
+        ],
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ]
+      }
+    },
+    "LambdaRoute": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "InlineCode": "exports.handler = async (event) => {\n    const response = {\n        statusCode: 200,\n        body: JSON.stringify('Hello from Lambda! LambdaRoute'),\n    };\n    return response;\n};\n",
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x",
+        "MemorySize": 128,
+        "Timeout": 10,
+        "Role": {
+          "Fn::GetAtt": ["RoleLambda", "Arn"]
+        },
+        "FunctionName": { "Fn::Sub": "${AWS::StackName}-lambda-route" },
+        "Events": {
+          "GetRequest": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/route",
+              "Method": "GET"
+            }
+          }
+        }
+      }
+    },
+    "LambdaMappingGet": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "InlineCode": "exports.handler = async (event) => {\n    const response = {\n        statusCode: 200,\n        body: JSON.stringify('Hello from Lambda! LambdaMappingGet'),\n    };\n    return response;\n};\n",
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x",
+        "MemorySize": 128,
+        "Timeout": 10,
+        "Role": {
+          "Fn::GetAtt": ["RoleLambda", "Arn"]
+        },
+        "FunctionName": { "Fn::Sub": "${AWS::StackName}-lambda-mapping-get" },
+        "Events": {
+          "GetRequest": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/mapping-get",
+              "Method": "GET"
+            }
+          }
+        }
+      }
+    },
+    "LambdaMappingSet": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "InlineCode": "exports.handler = async (event) => {\n    const response = {\n        statusCode: 200,\n        body: JSON.stringify('Hello from Lambda! LambdaMappingSet'),\n    };\n    return response;\n};\n",
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x",
+        "MemorySize": 128,
+        "Timeout": 10,
+        "Role": {
+          "Fn::GetAtt": ["RoleLambda", "Arn"]
+        },
+        "FunctionName": { "Fn::Sub": "${AWS::StackName}-lambda-mapping-set" },
+        "Events": {
+          "PostRequest": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/mapping-set",
+              "Method": "POST"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {}
+}
