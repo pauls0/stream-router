@@ -85,7 +85,7 @@
                     "s3:GetObject",
                     "s3:PutObject",
                     "s3:DeleteObject",
-                    "dynamodb:Query"
+                    "dynamodb:*"
                   ],
                   "Resource": [
                     { "Fn::GetAtt": ["BucketAssets", "Arn"] },
@@ -294,20 +294,12 @@
           {
             "AttributeName": "network",
             "AttributeType": "S"
-          },
-          {
-            "AttributeName": "cdn",
-            "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
             "AttributeName": "network",
             "KeyType": "HASH"
-          },
-          {
-            "AttributeName": "cdn",
-            "KeyType": "RANGE"
           }
         ],
         "ProvisionedThroughput": {
