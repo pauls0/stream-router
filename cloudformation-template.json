@@ -277,6 +277,36 @@
           }
         ]
       }
+    },
+    "TableMappings": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": { "Fn::Sub": "${AWS::StackName}-table-mappings" },
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "Network",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "CDN",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "Network",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "CDN",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      }
     }
   },
   "Outputs": {
