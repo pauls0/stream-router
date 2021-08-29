@@ -1,5 +1,5 @@
 {
-  "name": "lambda-mapping-set",
+  "name": "lambda-mapping-get",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,10 +12,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/aws-sdk": "^2.7.0",
     "@types/node": "^16.7.4",
+    "ts-node": "^10.2.1",
+    "ts-node-dev": "^1.1.8",
     "typescript": "^4.4.2"
   },
   "dependencies": {
+    "@types/aws-lambda": "^8.10.83",
+    "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.978.0"
   }
 }
