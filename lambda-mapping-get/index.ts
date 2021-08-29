@@ -1,9 +1,25 @@
 // import awssdk from "aws-sdk";
 
-exports.handler = async (event) => {
+interface Mappings {
+  network: number;
+  cdn: string;
+}
+interface Payload {
+  mappings: Mappings[];
+}
+
+const Payload: Payload = {
+  mappings: [
+    { network: 1, cdn: "" },
+    { network: 2, cdn: "" },
+    { network: 3, cdn: "" },
+  ],
+};
+
+exports.handler = async () => {
   const response = {
     statusCode: 200,
-    body: JSON.stringify("Hello from Lambda! mapping-get"),
+    body: JSON.stringify(Payload),
   };
   return response;
 };
