@@ -1,0 +1,243 @@
+Transform: 'AWS::Serverless-2016-10-31'
+AWSTemplateFormatVersion: 2010-09-09
+Description: Stream Router
+Metadata: {}
+Parameters:
+  AdminConsoleRepository:
+    Type: String
+    Description: GitHub Repository URL
+    Default: 'https://github.com/pauls0/stream-router'
+  AdminConsoleBranch:
+    Type: String
+    Description: Github Repository Branch
+    Default: main
+  AdminConsoleOauthToken:
+    Type: String
+    Description: GitHub OauthToken
+    NoEcho: true
+  AdminConsoleDomain:
+    Type: String
+    Description: Domain name to host application
+    Default: ''
+Mappings: {}
+Conditions:
+  UseCustomDomain: !Not 
+    - !Equals 
+      - !Ref AdminConsoleDomain
+      - ''
+Resources:
+  BucketDeployment:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub '${AWS::StackName}-bucket-deployment'
+  BucketAssets:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub '${AWS::StackName}-bucket-assets'
+  RoleLambda:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-role-lambda'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: !Sub '${AWS::StackName}-lambda-policy'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: RoutePolicy
+                Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:PutObject'
+                  - 's3:DeleteObject'
+                  - 'dynamodb:*'
+                Resource:
+                  - !GetAtt 
+                    - BucketAssets
+                    - Arn
+                  - !GetAtt 
+                    - TableMappings
+                    - Arn
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+  RoleAmplify:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - amplify.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: Amplify
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'amplify:*'
+                Resource: '*'
+  LambdaRoute:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 10
+      Role: !GetAtt 
+        - RoleLambda
+        - Arn
+      FunctionName: !Sub '${AWS::StackName}-lambda-route'
+      CodeUri:
+        Bucket: !Ref BucketDeployment
+        Key: lambda-route.zip
+      Events:
+        GetRequest:
+          Type: Api
+          Properties:
+            Path: /route
+            Method: GET
+  LambdaMappingGet:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 10
+      Role: !GetAtt 
+        - RoleLambda
+        - Arn
+      FunctionName: !Sub '${AWS::StackName}-lambda-mapping-get'
+      CodeUri:
+        Bucket: !Ref BucketDeployment
+        Key: lambda-mapping-get.zip
+      Events:
+        GetRequest:
+          Type: Api
+          Properties:
+            Path: /mapping-get
+            Method: GET
+  LambdaMappingSet:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 10
+      Role: !GetAtt 
+        - RoleLambda
+        - Arn
+      FunctionName: !Sub '${AWS::StackName}-lambda-mapping-set'
+      CodeUri:
+        Bucket: !Ref BucketDeployment
+        Key: lambda-mapping-set.zip
+      Events:
+        PostRequest:
+          Type: Api
+          Properties:
+            Path: /mapping-set
+            Method: POST
+  AmplifyAppAdminConsole:
+    Type: 'AWS::Amplify::App'
+    Properties:
+      Name: !Sub '${AWS::StackName}-amplify-app-admin-console'
+      Description: Admin Console React App
+      Repository: !Ref AdminConsoleRepository
+      OauthToken: !Ref AdminConsoleOauthToken
+      IAMServiceRole: !GetAtt 
+        - RoleAmplify
+        - Arn
+      BuildSpec: !Join 
+        - ''
+        - - |
+            version: 1
+          - |
+            appRoot: /site-admin-console
+          - |
+            frontend:
+          - |2
+              phases:
+          - |2
+                test:
+          - |2
+                  commands:
+          - |2
+                    - yarn test
+          - |2
+                preBuild:
+          - |2
+                  commands:
+          - |2
+                    - yarn install
+          - |2
+                build:
+          - |2
+                  commands:
+          - |2
+                    - yarn run build
+          - |2
+              artifacts:
+          - |2
+                baseDirectory: build
+          - |2
+                files:
+          - |2
+                  - '**/*'
+          - |2
+              cache:
+          - |2
+                paths:
+          - |2
+                  - node_modules/**/*
+  AmplifyBranchAdminConsole:
+    Type: 'AWS::Amplify::Branch'
+    Properties:
+      BranchName: !Ref AdminConsoleBranch
+      AppId: !GetAtt 
+        - AmplifyAppAdminConsole
+        - AppId
+      EnableAutoBuild: true
+  AmplifyDomainAdminConsole:
+    Type: 'AWS::Amplify::Domain'
+    Condition: UseCustomDomain
+    Properties:
+      DomainName: !Ref AdminConsoleDomain
+      AppId: !GetAtt 
+        - AmplifyAppAdminConsole
+        - AppId
+      SubDomainSettings:
+        - Prefix: master
+          BranchName: !GetAtt 
+            - AmplifyBranchAdminConsole
+            - BranchName
+  TableMappings:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: !Sub '${AWS::StackName}-table-mappings'
+      AttributeDefinitions:
+        - AttributeName: network
+          AttributeType: S
+      KeySchema:
+        - AttributeName: network
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+Outputs:
+  DefaultDomain:
+    Value: !GetAtt 
+      - AmplifyAppAdminConsole
+      - DefaultDomain
+    Condition: UseCustomDomain
