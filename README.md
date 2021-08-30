@@ -163,3 +163,20 @@ curl -X POST -G \
   "status": “success”
 }
 ```
+
+### Commands reference
+```
+aws cloudformation validate-template \
+--template-body file://~/repos/stream-router/cloudformation-template.json
+```
+
+```
+aws cloudformation update-stack \
+--stack-name stream-router \
+--template-body file://~/repos/stream-router/cloudformation-template.json \
+--parameters ParameterKey=AdminConsoleRepository,ParameterValue=https://github.com/pauls0/stream-router \
+--parameters ParameterKey=AdminConsoleBranch,ParameterValue=main \
+--parameters ParameterKey=AdminConsoleOauthToken,ParameterValue=<token> \
+--capabilities CAPABILITY_NAMED_IAM \
+--capabilities CAPABILITY_AUTO_EXPAND
+```
