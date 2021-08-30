@@ -127,7 +127,7 @@ graph TB
 **Endpoint 1**: Get Route for IP - `GET route/?ip=1.2.3.4`
 ```
 curl -X GET -G \
-'https://msbhl0oai9.execute-api.ap-southeast-2.amazonaws.com/Prod/route' \
+'https://m27vh1uta7.execute-api.ap-southeast-2.amazonaws.com/Prod/route' \
 -d ip=1.2.3.4
 ```
 ```
@@ -139,7 +139,7 @@ curl -X GET -G \
 **Endpoint 2**: Get Mappings for Network to CDN - `GET mapping-get/`
 ```
 curl -X GET \
-'https://msbhl0oai9.execute-api.ap-southeast-2.amazonaws.com/Prod/mapping-get'
+'https://m27vh1uta7.execute-api.ap-southeast-2.amazonaws.com/Prod/mapping-get'
 ```
 ```
 {
@@ -153,8 +153,8 @@ curl -X GET \
 
 **Endpoint 3**: Set Mappings for Network to CDN - `POST mapping-set/?network=1&cdn=A`
 ```
-curl -X POST -G \        
-'https://msbhl0oai9.execute-api.ap-southeast-2.amazonaws.com/Prod/mapping-set' \
+curl -X POST -G \
+'https://m27vh1uta7.execute-api.ap-southeast-2.amazonaws.com/Prod/mapping-set' \
 -d network=1 \
 -d cdn=A
 ```
