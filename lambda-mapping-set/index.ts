@@ -2,6 +2,12 @@
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import { config, DynamoDB } from "aws-sdk";
 
+if (process.env.AWS_EXECUTION_ENV == undefined) {
+  local_entrypoint();
+} else {
+  aws_entrypoint();
+}
+
 config.update({
   region: "ap-southeast-2",
 });
@@ -33,26 +39,7 @@ async function updateMapping(network: string, cdn: string): Promise<void> {
     });
 }
 
-exports.handler = async (
-  event: APIGatewayEvent
-): Promise<APIGatewayProxyResult> => {
-  const network = event?.queryStringParameters?.network;
-  const cdn = event?.queryStringParameters?.cdn;
-
-  if (
-    network == null ||
-    network == undefined ||
-    cdn == null ||
-    cdn == undefined
-  ) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "Please provide network and cdn",
-      }),
-    };
-  }
-
+async function response(network: string, cdn: string) {
   const response = await updateMapping(network, cdn)
     .then((data) => {
       return {
@@ -68,24 +55,35 @@ exports.handler = async (
     });
 
   return response;
-};
-// async function run() {
-//   const response = await updateMapping("1", "F")
-//     .then((data) => {
-//       return {
-//         statusCode: 200,
-//         body: JSON.stringify({ message: "success" }),
-//       };
-//     })
-//     .catch((err) => {
-//       return {
-//         statusCode: 400,
-//         body: JSON.stringify({ error: JSON.stringify(err) }),
-//       };
-//     });
+}
 
-//   // return response;
-//   console.log(response);
-//   console.log("done");
-// }
-// run();
+function local_entrypoint() {
+  const network = "";
+  const cdn = "";
+  console.log(response(network, cdn));
+}
+
+function aws_entrypoint() {
+  exports.handler = async (
+    event: APIGatewayEvent
+  ): Promise<APIGatewayProxyResult> => {
+    const network = event?.queryStringParameters?.network;
+    const cdn = event?.queryStringParameters?.cdn;
+
+    if (
+      network == null ||
+      network == undefined ||
+      cdn == null ||
+      cdn == undefined
+    ) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "Please provide network and cdn",
+        }),
+      };
+    }
+
+    return response(network, cdn);
+  };
+}
