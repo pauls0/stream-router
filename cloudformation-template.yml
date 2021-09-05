@@ -162,7 +162,7 @@ Resources:
       Timeout: 10
       Policies:
         - AWSLambdaExecute
-        - Version: '2012-10-17' 
+        - Version: "2012-10-17"
           Statement:
             - Effect: Allow
               Action:
@@ -236,11 +236,13 @@ Resources:
         #   AttributeType: N
         # - AttributeName: cidr
         #   AttributeType: S
-        # - AttributeName: host
-        #   AttributeType: S
+        - AttributeName: host
+          AttributeType: S
       KeySchema:
         - AttributeName: cdn
           KeyType: HASH
+        - AttributeName: host
+          KeyType: RANGE
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
