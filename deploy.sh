@@ -6,10 +6,12 @@ TEMPLATE="cloudformation-template.yml"
 lambdaroute=$(ls | grep lambda-route- | awk '{ print $1 }');
 lambdamappingget=$(ls | grep lambda-mapping-get- | awk '{ print $1 }');
 lambdamappingset=$(ls | grep lambda-mapping-set- | awk '{ print $1 }');
+lambdasetup=$(ls | grep lambda-setup- | awk '{ print $1 }');
 
 aws s3 cp ${lambdaroute} s3://stream-router-dependancies/;
 aws s3 cp ${lambdamappingget} s3://stream-router-dependancies/;
 aws s3 cp ${lambdamappingset} s3://stream-router-dependancies/;
+aws s3 cp ${lambdasetup} s3://stream-router-dependancies/;
 
 aws cloudformation deploy \
     --template-file "${TEMPLATE}" \
@@ -23,3 +25,4 @@ aws cloudformation deploy \
       LambdaRouteCodeUriKey="${lambdaroute}" \
       LambdaMappingGetCodeUriKey="${lambdamappingget}" \
       LambdaMappingSetCodeUriKey="${lambdamappingset}" \
+      LambdaSetupCodeUriKey="${lambdasetup}" \
