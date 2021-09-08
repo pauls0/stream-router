@@ -143,7 +143,7 @@ graph TB
 
 ```
 curl -X GET -G \
-'https://fkgex0k3b2.execute-api.ap-southeast-2.amazonaws.com/Prod/route' \
+'https://wryx5i9qfh.execute-api.ap-southeast-2.amazonaws.com/Prod/route' \
 -d ip=1.2.3.4
 ```
 
@@ -157,7 +157,7 @@ curl -X GET -G \
 
 ```
 curl -X GET \
-'https://fkgex0k3b2.execute-api.ap-southeast-2.amazonaws.com/Prod/mapping-get'
+'https://wryx5i9qfh.execute-api.ap-southeast-2.amazonaws.com/Prod/mapping-get'
 ```
 
 ```
@@ -174,7 +174,7 @@ curl -X GET \
 
 ```
 curl -X POST -G \
-'https://fkgex0k3b2.execute-api.ap-southeast-2.amazonaws.com/Prod/mapping-set' \
+'https://wryx5i9qfh.execute-api.ap-southeast-2.amazonaws.com/Prod/mapping-set' \
 -d network=1 \
 -d cdn=A
 ```
