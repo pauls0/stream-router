@@ -26,6 +26,8 @@ Parameters:
     Type: String
   LambdaMappingSetCodeUriKey:
     Type: String
+  LambdaSetupCodeUriKey:
+    Type: String
   FileUriKeycdirnetwork:
     Type: String
     Default: "cdir-network.ndjson"
@@ -147,6 +149,41 @@ Resources:
           Properties:
             Path: /mapping-set
             Method: POST
+  LambdaSetup:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-lambda-setup"
+      CodeUri:
+        Bucket: !Ref BucketDepenancies
+        Key: !Ref LambdaSetupCodeUriKey
+      Handler: index.handler
+      Runtime: nodejs14.x
+      MemorySize: 1024
+      Timeout: 10
+      Policies:
+        - AWSLambdaExecute
+        - Version: '2012-10-17' 
+          Statement:
+            - Effect: Allow
+              Action:
+                - "s3:*" # TODO: remove s3:*
+                - "dynamodb:*" # TODO: remove dynamodb:*
+              Resource:
+                - !GetAtt
+                  - BucketAssets
+                  - Arn
+                - !GetAtt
+                  - TableMappings
+                  - Arn
+                - !GetAtt
+                  - TableCDIRNetwork
+                  - Arn
+                - !GetAtt
+                  - TableCDNHost
+                  - Arn
+                - !GetAtt
+                  - TableCDNHostDefaults
+                  - Arn
   TableMappings:
     Type: "AWS::DynamoDB::Table"
     DeletionPolicy: Delete
