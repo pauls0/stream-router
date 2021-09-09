@@ -26,6 +26,15 @@ Parameters:
     Type: String
   LambdaMappingSetCodeUriKey:
     Type: String
+  FileUriKeycdirnetwork:
+    Type: String
+    Default: "cdir-network.ndjson"
+  FileUriKeycdnhost:
+    Type: String
+    Default: "cdn-host.ndjson"
+  FileUriKeycdnhostdefaults:
+    Type: String
+    Default: "cdn-host-defaults.ndjson"
 Mappings: {}
 Conditions:
   UseCustomDomain: !Not
