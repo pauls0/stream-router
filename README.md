@@ -1,6 +1,6 @@
 # stream-router
 
-Take home project
+Take home project - AWS Serverless Api 
 
 ### Spec:
 
